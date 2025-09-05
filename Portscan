@@ -71,4 +71,4 @@ print("Scan complete.")
 #6. Main thread sends 4 None stop signals; each worker gets None, calls task_done(), and exits.
 
 
-#7. Main thread join()s workers and finishes.
+#7. Main thread join()s workers and finishes
