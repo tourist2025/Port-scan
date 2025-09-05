@@ -1,0 +1,74 @@
+import threading
+import queue
+import socket
+import time
+
+target = "scanme.nmap.org"  # Example test host
+q = queue.Queue()
+
+def port_scanner():
+    while True:
+        port = q.get()
+        if port is None:  # Stop signal
+            break
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(0.5)  # Short timeout
+                result = s.connect_ex((target, port))
+                if result == 0:
+                    print(f"[OPEN] Port {port}")
+        except Exception as e:
+            pass
+        finally:
+            q.task_done()
+
+def fill_queue(ports):
+    for port in ports:
+        q.put(port)
+
+# Settings
+num_threads = 20
+ports_to_scan = range(1, 101)  # First 100 ports
+
+# Start consumers (port scanning workers)
+threads = []
+for _ in range(num_threads):
+    t = threading.Thread(target=port_scanner)
+    t.start()
+    threads.append(t)
+
+# Fill queue with work
+fill_queue(ports_to_scan)
+
+# Wait for queue to be empty
+q.join()
+
+# Stop all threads
+for _ in range(num_threads):
+    q.put(None)
+
+# Wait for all threads to finish
+for t in threads:
+    t.join()
+
+print("Scan complete.")
+
+#1. Main thread starts 4 worker threads (fast sequential loop).
+
+
+#2. Main thread starts filling queue with ports 1..8.
+
+
+#3. Some worker threads are scheduled and call q.get() — they start scanning ports as they appear.
+
+
+#4. Producers and consumers interleave: main thread may still be putting ports while workers are scanning earlier ports.
+
+
+#5. When all ports processed and task_done() called for each, q.join() returns.
+
+
+#6. Main thread sends 4 None stop signals; each worker gets None, calls task_done(), and exits.
+
+
+#7. Main thread join()s workers and finishes.
