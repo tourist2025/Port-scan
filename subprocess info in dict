@@ -17,4 +17,8 @@ for cmd in cmds:
         # Store stderr if command fails
         results[cmd] = e.stderr.strip() if e.stderr else "Command failed"
 
-print(results)
+#print(results)
+with open('commands.log','w') as f:
+    for key,value in results.items():
+        f.write(f'{key} : {value} {'\n'}')
+        
