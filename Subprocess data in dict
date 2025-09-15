@@ -1,0 +1,20 @@
+import subprocess
+
+cmds = ['whoami', 'uname -a', 'date']
+results = {}
+
+for cmd in cmds:
+    try:
+        # Run each command
+        result = subprocess.run(
+            cmd, shell=True,
+            capture_output=True, text=True,
+            check=True
+        )
+        # Store stdout (strip removes trailing \n)
+        results[cmd] = result.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        # Store stderr if command fails
+        results[cmd] = e.stderr.strip() if e.stderr else "Command failed"
+
+print(results)
