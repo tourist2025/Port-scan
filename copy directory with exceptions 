@@ -1,0 +1,12 @@
+import shutil, fnmatch, os
+
+def ignore_patterns(path, names):
+    # ignore .git and *.pyc files
+    ignored = set()
+    for pattern in ('*.pyc', '*.log'):
+        ignored.update(fnmatch.filter(names, pattern))
+    if '.git' in names:
+        ignored.add('.git')
+    return ignored
+
+shutil.copytree('/opt/project', '/tmp/stage_project', ignore=ignore_patterns)
