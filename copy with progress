@@ -1,0 +1,14 @@
+def copy_with_progress(src, dst, bufsize=1024*1024):
+    total = src.stat().st_size
+    copied = 0
+    with src.open('rb') as fsrc, dst.open('wb') as fdst:
+        while True:
+            buf = fsrc.read(bufsize)
+            if not buf:
+                break
+            fdst.write(buf)
+            copied += len(buf)
+            print(f'Copied {copied}/{total} bytes', end='\r')
+
+from pathlib import Path
+copy_with_progress(Path('/big/file.img'), Path('/tmp/file.img'))
