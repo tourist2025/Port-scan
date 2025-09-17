@@ -1,0 +1,39 @@
+import subprocess
+import platform
+
+def is_host_alive(ip, count=2, timeout=3):
+    """
+    Return True if ping to `ip` succeeds, False otherwise.
+    Works on Linux/macOS and Windows.
+    """
+    system = platform.system().lower()
+    if system == "windows":
+        cmd = ["ping", "-n", str(count), ip]
+    else:
+        cmd = ["ping", "-c", str(count), ip]
+
+    try:
+        # run the ping, capture output, set timeout
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        # On most systems ping returns 0 when at least one reply received.
+        return res.returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
+    except Exception:
+        return False
+
+def scan_range(base, start, end):
+    results = []
+    for i in range(start, end + 1):
+        ip = f"{base}.{i}"
+        alive = is_host_alive(ip)
+        if alive:
+            results.append(f"{ip} is alive")
+        else:
+            results.append(f"{ip} is not responding")
+    return results
+
+if __name__ == "__main__":
+    base = "192.168.1"
+    out = scan_range(base, 1, 5)
+    print("\n".join(out))
