@@ -1,0 +1,21 @@
+import shutil, os
+
+path = "/tmp/test_folder"
+
+if os.path.exists(path):
+    print(f"Preview: Will delete {path}")
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            print("  FILE:", os.path.join(root, name))
+        for name in dirs:
+            print("  DIR :", os.path.join(root, name))
+
+    choice = input("Are you sure you want to delete this folder? (y/n): ")
+
+    if choice.lower() == "y":
+        shutil.rmtree(path)
+        print(f"{path} deleted.")
+    else:
+        print("Cancelled.")
+else:
+    print("Path does not exist")
